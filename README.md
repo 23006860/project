@@ -1,146 +1,104 @@
-# project
+# Face Detection using Haar Cascades with OpenCV and Matplotlib
+
 ## Aim
-To write a python program using OpenCV to do the following image manipulations.
-i) Extract ROI from  an image.
-ii) Perform handwritting detection in an image.
-iii) Perform object detection with label in an image.
-## Software Required:
-Anaconda - Python 3.7
-## Algorithm:
-## I)Perform ROI from an image
-### Step1:
-Import necessary packages 
-### Step2:
-Read the image and convert the image into RGB
-### Step3:
-Display the image
-### Step4:
-Set the pixels to display the ROI 
-### Step5:
-Perform bit wise conjunction of the two arrays  using bitwise_and 
-### Step6:
-Display the segmented ROI from an image.
-## II)Perform handwritting detection in an image
-### Step1:
-Import necessary packages 
-### Step2:
-Define a function to read the image,Convert the image to grayscale,Apply Gaussian blur to reduce noise and improve edge detection,Use Canny edge detector to find edges in the image,Find contours in the edged image,Filter contours based on area to keep only potential text regions,Draw bounding boxes around potential text regions.
-### Step3:
-Display the results.
-## III)Perform object detection with label in an image
-### Step1:
-Import necessary packages 
-### Step2:
-Set and add the config_file,weights to ur folder.
-### Step3:
-Use a pretrained Dnn model (MobileNet-SSD v3)
-### Step4:
-Create a classLabel and print the same
-### Step5:
-Display the image using imshow()
-### Step6:
-Set the model and Threshold to 0.5
-### Step7:
-Flatten the index,confidence.
-### Step8:
-Display the result.
 
-## PROGRAM :
+To write a Python program using OpenCV to perform the following image manipulations:  
+i) Extract ROI from an image.  
+ii) Perform face detection using Haar Cascades in static images.  
+iii) Perform eye detection in images.  
+iv) Perform face detection with label in real-time video from webcam.
+
+## Software Required
+
+- Anaconda - Python 3.7 or above  
+- OpenCV library (`opencv-python`)  
+- Matplotlib library (`matplotlib`)  
+- Jupyter Notebook or any Python IDE (e.g., VS Code, PyCharm)
+
+## Algorithm
+
+### I) Load and Display Images
+
+- Step 1: Import necessary packages: `numpy`, `cv2`, `matplotlib.pyplot`  
+- Step 2: Load grayscale images using `cv2.imread()` with flag `0`  
+- Step 3: Display images using `plt.imshow()` with `cmap='gray'`
+
+### II) Load Haar Cascade Classifiers
+
+- Step 1: Load face and eye cascade XML files 
+### III) Perform Face Detection in Images
+
+- Step 1: Define a function `detect_face()` that copies the input image  
+- Step 2: Use `face_cascade.detectMultiScale()` to detect faces  
+- Step 3: Draw white rectangles around detected faces with thickness 10  
+- Step 4: Return the processed image with rectangles  
+
+### IV) Perform Eye Detection in Images
+
+- Step 1: Define a function `detect_eyes()` that copies the input image  
+- Step 2: Use `eye_cascade.detectMultiScale()` to detect eyes  
+- Step 3: Draw white rectangles around detected eyes with thickness 10  
+- Step 4: Return the processed image with rectangles  
+
+### V) Display Detection Results on Images
+
+- Step 1: Call `detect_face()` or `detect_eyes()` on loaded images  
+- Step 2: Use `plt.imshow()` with `cmap='gray'` to display images with detected regions highlighted  
+
+### VI) Perform Face Detection on Real-Time Webcam Video
+
+- Step 1: Capture video from webcam using `cv2.VideoCapture(0)`  
+- Step 2: Loop to continuously read frames from webcam  
+- Step 3: Apply `detect_face()` function on each frame  
+- Step 4: Display the video frame with rectangles around detected faces  
+- Step 5: Exit loop and close windows when ESC key (key code 27) is pressed  
+- Step 6: Release video capture and destroy all OpenCV windows
+- ## Program
 ```
-Name: Rahul V
-Reg. no: 212223240133
-```
-### I)Perform ROI from an image
-```python
 import cv2
-import numpy as np
 
-image = cv2.imread('car.jpg')
-image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-cv2.imshow('muscle_car', image_rgb)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-roi_mask = np.zeros_like(image_rgb)
-roi_mask[100:300, 200:400, :] = 255  
-segmented_roi = cv2.bitwise_and(image_rgb, roi_mask)
-cv2.imshow('Segmented ROI', segmented_roi)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# Load Haar cascade
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+# Read the image
+image = cv2.imread('sesank.jpg')
+
+# Check if image was loaded
+if image is None:
+    print("Error: Image not found.")
+else:
+    # Convert to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Detect faces
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
+
+    # Draw rectangles
+    for (x, y, w, h) in faces:
+        cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+    # Get screen resolution
+    screen_res = 1920, 1080  # You can change this based on your screen
+    scale_width = screen_res[0] / image.shape[1]
+    scale_height = screen_res[1] / image.shape[0]
+    scale = min(scale_width, scale_height)
+
+    window_width = int(image.shape[1] * scale)
+    window_height = int(image.shape[0] * scale)
+
+    # Resize image
+    resized_image = cv2.resize(image, (window_width, window_height))
+
+    # Show image
+    cv2.imshow('Detected Faces', resized_image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 ```
+## Output
+![PHOTO 1](https://github.com/user-attachments/assets/63f7fbd7-2176-4be9-95a5-e3c4f9c0ad93)
+![PHOTO 2](https://github.com/user-attachments/assets/04c51b62-990a-49fe-8e80-787af4026618)
+![PHOTO 3](https://github.com/user-attachments/assets/c64241de-9ea8-4c18-9e94-c2964d2acee2)
+![PHOTO 4](https://github.com/user-attachments/assets/47138103-b1e4-42cf-a17b-d7af1eebae3d)
 
-#### OUTPUT:
-![image](https://github.com/user-attachments/assets/35a43390-5028-414a-880d-c7fc75b77bca)
-
-![image](https://github.com/user-attachments/assets/557e926b-7ba0-4055-a25f-9bcda67feb76)
-
-
-### II)Perform handwritting detection in an image
-```python
-import cv2
-import numpy as np
-import matplotlib.pyplot as plt
-
-def detect_handwriting(image_path):
-    img = cv2.imread(image_path)
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-    edges = cv2.Canny(blurred, 50, 150)
-    contours, _ = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    min_area = 100
-    text_contours = [cnt for cnt in contours if cv2.contourArea(cnt) > min_area]
-    img_copy = img.copy()
-    for contour in text_contours:
-        x, y, w, h = cv2.boundingRect(contour)
-        cv2.rectangle(img_copy, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        
-    img_rgb = cv2.cvtColor(img_copy, cv2.COLOR_BGR2RGB)
-    plt.imshow(img_rgb)
-    plt.title('Handwriting Detection')
-    plt.axis('off')
-    plt.show()
-    
-image_path = 'hand.jpg'
-detect_handwriting(image_path)
-```
-
-#### OUTPUT:
-![image](https://github.com/user-attachments/assets/5f7093c5-cfe8-474f-907c-d416aa5a634b)
-
-
-### III)Perform object detection with label in an image
-```python
-config_file='ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt'
-frozen_model='frozen_inference_graph.pb'
-
-model=cv2.dnn_DetectionModel(frozen_model,config_file)
-
-classLabels = []
-file_name='Labels.txt'
-with open(file_name,'rt')as fpt:
-    classLabels=fpt.read().rstrip('\n').split('\n')
-
-print(classLabels)
-print(len(classLabels))
-img=cv2.imread('car.jpg')
-plt.imshow(img)
-plt.imshow(cv2.cvtColor(img,cv2.COLOR_BGR2RGB))
-model.setInputSize(320,320)
-model.setInputScale(1.0/127.5)#255/2=127.5
-model.setInputMean((127.5,127.5,127.5))
-model.setInputSwapRB(True)
-ClassIndex,confidence,bbox=model.detect(img,confThreshold=0.5)
-print(ClassIndex)
-font_scale=3
-font=cv2.FONT_HERSHEY_PLAIN
-for ClassInd,conf,boxes in zip(ClassIndex.flatten(),confidence.flatten(),bbox):
-    cv2.rectangle(img,boxes,(0,0,255),2)
-    cv2.putText(img,classLabels[ClassInd-1],(boxes[0]+10,boxes[1]+40),font,fontScale=font_scale,color=(255,0,0),thickness=1)
-plt.imshow(cv2.cvtColor(img,cv2.COLOR_BGR2RGB))
-```
-
-#### OUTPUT:
-![image](https://github.com/user-attachments/assets/bac7b280-c260-493f-b725-7a5f6fab3cc5)
-
-
-## Result:
-Thus, a python program using OpenCV for following image manipulations is done successfully.
+## Result
+Thus the given objective of face detection is done sucessfully.
